@@ -5,7 +5,9 @@ export async function inspectFile(file) {
   const extension = (file.name.split('.').pop() || '').toLowerCase();
   const details = [];
   let type = 'Formato sconosciuto', verified = false;
-  if (starts(0,0x50,0x53,0x46)) {
+  if(starts(0x52,0x61,0x72,0x21,0x1a,0x07,0x01,0x00)){type='RAR5 (firma verificata)';verified=true;details.push('Archivio RAR5: il nome .iso non corrisponde al formato interno.');}
+  else if(starts(0x52,0x61,0x72,0x21,0x1a,0x07,0x00)){type='RAR4 (firma verificata)';verified=true;details.push('Archivio RAR4: il nome .iso non corrisponde al formato interno.');}
+  else if (starts(0,0x50,0x53,0x46)) {
     type = 'PSF / PARAM.SFO'; verified = true;
     if (header.length >= 20) {
       const view = new DataView(header.buffer);
