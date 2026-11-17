@@ -6,10 +6,14 @@ export async function unpackRar(file){
  const matches=a=>a.every((x,i)=>head[i]===x);
  if(!matches(v4)&&!matches(v5))throw Error('Firma RAR non valida. Cambiare estensione non ripara un archivio.');
  let lib;
- try{lib=await import('https://esm.sh/unrar-js@0.2.3?bundle');}
- catch(e){throw Error('Motore RAR non disponibile (rete o browser): '+e.message);}
+ const sources=['https://cdn.jsdelivr.net/npm/unrar-js@0.2.3/+esm','https://esm.sh/unrar-js@0.2.3?bundle'];
+ const failures=[];
+ for(const source of sources){try{lib=await import(source);if(typeof lib.createExtractorFromData==='function')break;failures.push('API non disponibile');}catch(e){failures.push(e.message);}}
+ if(!lib||typeof lib.createExtractorFromData!=='function')throw Error('Motore RAR non avviato su Safari: '+failures.join(' | '));
  if(typeof lib.createExtractorFromData!=='function')throw Error('Motore RAR incompatibile con questa versione.');
- const extractor=await lib.createExtractorFromData({data:new Uint8Array(await file.arrayBuffer())});
+ let extractor;
+ try{extractor=await lib.createExtractorFromData({data:new Uint8Array(await file.arrayBuffer())});}
+ catch(e){throw Error('Decodifica RAR fallita (possibile limite RAM o incompatibilità del motore): '+e.message);}
  const extracted=extractor.extract();
  const files=[];
  let total=0;
