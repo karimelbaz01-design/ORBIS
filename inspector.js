@@ -30,7 +30,7 @@ export async function inspectFile(file) {
     type='ELF'; verified=true;
     if(header.length>=20){
       const machine=new DataView(header.buffer).getUint16(18,header[5]===1);
-      details.push('Architettura ELF: '+(machine===21?'PowerPC (possibile PPU PS3)':'machine '+machine));
+      details.push('Architettura ELF: '+(machine===20?'PowerPC 32-bit (non necessariamente PS3)':machine===21?'PowerPC 64-bit':'machine '+machine));
     }
   } else if(starts(0x7f,0x50,0x4b,0x47)){type='PKG (firma PS3)';verified=true;}
   else if(starts(0x53,0x43,0x45,0x00)){type='SELF/SCE (firma rilevata)';verified=true;}
